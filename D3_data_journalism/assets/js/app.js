@@ -80,6 +80,9 @@ function renderDataLabels(dataLabelsGroup, newXScale, newYScale, chosenXAxis, ch
     return dataLabelsGroup;
 }
 
+var toolTip = d3.select("#toolTip").append("div")			
+.style("opacity", 0);
+
 // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, circlesGroup, dataLabelsGroup) {
 
@@ -87,30 +90,28 @@ function updateToolTip(chosenXAxis, circlesGroup, dataLabelsGroup) {
   
     if (chosenXAxis === "poverty") {
       label = "Poverty:";
-    }
-    else if(chosenXAxis === "age") {
+    } else if(chosenXAxis === "age") {
       label = "Age";
+    } else {
+      label = "Household Income";
     }
-    else {
-      label = "Household Income"
-    }
-  
-    var toolTip = d3.tip()
-      .attr("class", "tooltip")
-      .offset([80, -60])
-      .html(function(d) {
-        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
-      });
+
+    // var toolTip = d3.tip()
+    //   .attr("class", "tooltip")
+    //   .offset([80, -60])
+    //   .html(function(d) {
+    //     return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+    //   });
   
     // circlesGroup.call(toolTip);
-    dataLabelsGroup.call(toolTip);
+    // dataLabelsGroup.call(toolTip);
   
     // Mouseover event
     // circlesGroup.on("mouseover", function(data) {toolTip.show(data)});
-    dataLabelsGroup.on("mouseover", function(data) {toolTip.show(data)});
+    // dataLabelsGroup.on("click", (data)=>{toolTip.show(data)});
     // Mouseout event
     // circlesGroup.on("mouseout", function(data, index) {toolTip.hide(data)});
-    dataLabelsGroup.on("mouseout", function(data, index) {toolTip.hide(data)});
+    // dataLabelsGroup.on("mouseout", function(data, index) {toolTip.hide(data)});
 
     return circlesGroup;
 }
@@ -141,7 +142,6 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
         data.obesity = +data.obesity
     })
 
-
  // xLinearScale function above csv import
  var xLinearScale = xScale(NPData, chosenXAxis);
  var yLinearScale = yScale(NPData, chosenYAxis);
@@ -158,7 +158,7 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
         .attr("cx", d => xLinearScale(d[chosenXAxis]))
         .attr("cy", d => yLinearScale(d[chosenYAxis]))
         .attr("r", 12)
-        .attr("fill", "#187bcd");
+        .attr("fill", "#187bcd")	
 
  var dataLabelsGroup = chartGroup.selectAll("text")
         .data(NPData)
@@ -173,7 +173,16 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
         .attr("text-anchor","middle")
         .attr("dy", "0.35em")
         .attr("class", "abbr")
-        .text(d=>d.abbr);
+        .text(d=>d.abbr)
+        .on("mouseover", d => {		
+        toolTip.transition()		
+              .duration(1000)			
+              .style("opacity", 1)
+      toolTip.html("<h6>State: "+ d.state +"</h6> <h6> "+ chosenXAxis+ ": " + d[chosenXAxis] + "</h6> <h6> "+ chosenYAxis+ ": " + d[chosenYAxis] + "</h6>")
+      // toolTip.html("State:"+ d.state` `${chosenXAxis} ${d[chosenXAxis]}    ${chosenYAxis} ${d[chosenYAxis]}`)
+
+            })	        
+ 
         
  // append x axis
  var xAxis = chartGroup.append("g")
@@ -268,7 +277,7 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
       }
       
       if (Xvalue !== chosenXAxis || Yvalue !== chosenYAxis) {
-  
+
         // replaces chosenXAxis with value
         chosenXAxis = Xvalue;
         chosenYAxis = Yvalue;
