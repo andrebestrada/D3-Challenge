@@ -1,8 +1,8 @@
 console.log("It´s alive!")
 
 // Create frame for the scatter plot
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = 1050;
+var svgHeight = 550;
 
 var margin = {
     top: 20,
@@ -30,14 +30,14 @@ var chosenYAxis = "healthcare";
 // Function for updating X Scale 
 function xScale(NPData, chosenXAxis){
     var xLinearScale = d3.scaleLinear()
-        .domain([d3.min(NPData, d => d[chosenXAxis]) * 0.8, d3.max(NPData,d => d[chosenXAxis]) * 1.2])
+        .domain([d3.min(NPData, d => d[chosenXAxis]) * .95, d3.max(NPData,d => d[chosenXAxis]) * 1.05])
         .range([0,width]);
     return xLinearScale
 }
 // Function for updating Y Scale 
 function yScale(NPData, chosenYAxis){
   var yLinearScale = d3.scaleLinear()
-      .domain([d3.min(NPData,d=>d[chosenYAxis])*0.7, d3.max(NPData,d => d[chosenYAxis]) * 1.1])
+      .domain([d3.min(NPData,d=>d[chosenYAxis])*0.8, d3.max(NPData,d => d[chosenYAxis]) * 1.1])
       .range([height,0]);
   return yLinearScale
 }
@@ -157,8 +157,9 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
         .append("circle")
         .attr("cx", d => xLinearScale(d[chosenXAxis]))
         .attr("cy", d => yLinearScale(d[chosenYAxis]))
-        .attr("r", 12)
-        .attr("fill", "#187bcd")	
+        .attr("r", 14)
+        .attr("fill", "#187bcd")
+        .classed("nodes",true)	
 
  var dataLabelsGroup = chartGroup.selectAll("text")
         .data(NPData)
@@ -167,19 +168,21 @@ d3.csv("assets/data/data.csv").then((NPData,err)=>{
         .attr("fill", "black")
         .attr("x", d => xLinearScale(d[chosenXAxis]))
         .attr("y", d => yLinearScale(d[chosenYAxis]))
-        .attr("font-size",".7em")
+        .attr("font-size",".8em")
         .attr("font-weight","bold")
         .style("fill", "white")
         .attr("text-anchor","middle")
         .attr("dy", "0.35em")
         .attr("class", "abbr")
         .text(d=>d.abbr)
-        .on("mouseover", d => {		
-        toolTip.transition()		
-              .duration(1000)			
-              .style("opacity", 1)
-      toolTip.html("<h6>State: "+ d.state +"</h6> <h6> "+ chosenXAxis+ ": " + d[chosenXAxis] + "</h6> <h6> "+ chosenYAxis+ ": " + d[chosenYAxis] + "</h6>")
-      // toolTip.html("State:"+ d.state` `${chosenXAxis} ${d[chosenXAxis]}    ${chosenYAxis} ${d[chosenYAxis]}`)
+        .on("mouseover", d => {
+          // circlesGroup(this).attr("fill", "red")
+          toolTip.transition()		
+                 .duration(1000)			
+                 .style("opacity", 1)
+          toolTip.html("<h6>State: "+ d.state +"</h6> <h6> "+ chosenXAxis+ ": " + d[chosenXAxis] + "</h6> <h6> "+ chosenYAxis+ ": " + d[chosenYAxis] + "</h6>")
+
+          
 
             })	        
  
